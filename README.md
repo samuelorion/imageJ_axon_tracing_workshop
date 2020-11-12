@@ -1,7 +1,12 @@
-# How to trace axons using imageJ, automatically (nearly)  
+# How to trace axons using imageJ, automatically (nearly) 
 
 [![hackmd-github-sync-badge](https://hackmd.io/1hzLYJ3HSny6CH9mzOxWVg/badge)](https://hackmd.io/1hzLYJ3HSny6CH9mzOxWVg)
 
+---
+
+If you are reading this on github, I recommend you open it [here](https://hackmd.io/@samuelorion/H1ro8MoKw) on hackMD (the markdown does not render in the same way). 
+
+---
 
 > [name=Samuel Burke 2020-11-12 ]
 ## Table of Contents
@@ -79,10 +84,96 @@ If you know very little about scripts in ImageJ, I encourage you to consult thes
 
 :::
 
+The ImageJ script can be found [here on github](https://github.com/samuelorion/imageJ_axon_tracing_workshop/blob/main/TraceAxons_worksho.ijm)
 
+#### How does this work? Step by step... 
+
+Declare a path to the folder containging your images.
+
+ 
+```javascript=
+input = "/Users/SamuelOrion/Downloads/TraceAxons_workshop";
+list = getFileList(input);
+Array.show(list);
+```
+
+We create a list of files which can be found in the folder, and can now be indexed. 
+
+>Value  
+>B1.tif  
+>C1.tif  
+>C2.tif  
+
+We will use this list to work our way though the images. 
+
+
+:::info
+Look what happens when we use the print function.
+:::
+
+```javascript=
+print(list[0]);
+```
+> B1.tif
+
+We create a for loop that creates a path to each image in the folder, than we can then use to open each file. 
+
+```javascript=
+for (i = 0; i < list.length; i++){
+		path = list[i];
+		file = input + path;
+```
+:::info
+you can replace 'list.length' with a an integer, such that you choose how many images you open (ie put 1 there, and it will only open the first image in 'list')
+:::
+To set up our analysis (and for opening images that are not .tif (ie. .nd files)), we will use biofromats to open the image.
+
+We can also crop on import, such that we can opn a selection of the images we want to analyze. 
 
 
 ```javascript=
-imageJ code here 
+start_x = 2000;
+start_y = 2000;
+width = 3000;
+height = 3000;
+		
+run("Bio-Formats", "open=file autoscale color_mode=Default crop rois_import=[ROI manager] view=Hyperstack stack_order=XYCZT x_coordinate_1=start_x y_coordinate_1=start_y width_1=width height_1=height");
+		
+raw = getTitle(); 
+title = replace(raw, ".tif", "");
+run("Set Scale...", "distance=0 known=0 pixel=1 unit=pixel");
+```
+
+:::warning
+start_ -> the top left hand cornder position of your crop  
+
+width and height -> the size of your crop   
+
+We also create to variable 'raw' and 'title'. This is the name of the raw (unmodified image), and 'title' the name of the image without the file extension. 
+:::
+
+Once you understand these steps, you can comment out commands that you deem not necessary. ie 
+
+```javascript=
+print(list[0]);
+```
+
+Is not necessary, but good to show what is going on. 
+
+Remember, when writing a script, write all these extra pieces such that you can really follow what you are telling the computer to do. 
+
+### Image processing
+:::warning
+Note that the current image in selection is 'raw', so no need to select it. 
+::: 
+
+```javascript=
+run("Enhance Contrast", "saturated=0.35");
+setMinAndMax(0, 750); // just for viz
+run("Duplicate...", " "); 
+gaussian = getTitle();
+
+gauss_sigma = 20; // can be modified 
+run("Gaussian Blur...", "sigma=gauss_sigma"); 
 ```
 
