@@ -9,6 +9,7 @@ If you are reading this on github, I recommend you open it [here](https://hackmd
 ---
 
 > [name=Samuel Burke 2020-11-12 ]
+
 ## Table of Contents
 
 [TOC]
@@ -24,6 +25,27 @@ Using images of TH+ DA neurons, we will segment the axons, quantify the total le
 If you so wish, you can count neurons manually. But, this is ineffective when we are trying to do experiments in 96 well plates*  
 
 *or on samples where the replicates is high enough that we can actually detect changes (see my previous power analysis for required replicates in our system link).  
+
+
+---
+
+
+**The steps we will do to achieve this goal**  
+We will not work through it in this order. 
+- [x] List files / images  
+- [x] Open images / crop on open
+- [x] Preprocess images 
+- [ ] Count neurons 
+- [ ] Save count output as image
+- [x] Segment neurons
+- [ ] Quantify neuron length / surface length 
+- [ ] Analyze skeleton
+- [ ] Save scaled image of skeleton for visual inspection
+- [ ] Scale images down so can be rapidly inspected visually
+- [ ] Analysis of data generated  
+
+
+---
 
 ### Instructions 
 
@@ -178,7 +200,9 @@ Remember, when writing a script, write all these extra pieces such that you can 
 
 ### Image processing
 :::warning
-Note that the current image in selection is 'raw', so no need to select it. 
+**Note**  
+- The current image in selection is 'raw', so no need to select it. 
+- 'gauss_sigma' can be modified to see the effect. I find 20 works well (but would depend on your magnification). 
 ::: 
 
 ```javascript=
