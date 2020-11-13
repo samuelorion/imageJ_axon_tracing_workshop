@@ -12,12 +12,16 @@ input = "/Users/SamuelOrion/Downloads/TraceAxons_workshop/";
 	
 list = getFileList(input);
 
-Array.show(list);
+// FOR TUTORIAL: -- these can be removed / added - for explanation purposes. 
+// FOR TUTORIAL: Array.show(list);
 
-print(list[0]);
+// FOR TUTORIAL: print(list[0]);
 
 
-for (i = 0; i < list.length; i++){
+for (i = 0; i < list.length; i++){  
+
+// FOR TUTORIAL: for (i = 0; i < 3; i++){	
+
 	path = list[i];
 	file = input + path;
 
@@ -59,6 +63,23 @@ for (i = 0; i < list.length; i++){
 	run("Enhance Contrast", "saturated=0.35");
 	
 	raw_sub_gaussian = getTitle();
+	
+// ####################################################
+// Threshold to binarise for skeletonization, choice of automatic threshold 
+// or using set might be interesting -- TBD 
+// ####################################################	
+	
+	selectWindow(raw_sub_gaussian);
+	setAutoThreshold("Huang dark no-reset");
+	//run("Threshold...");
+		
+	setThreshold(300, 65535);
 
+	setOption("BlackBackground", true);
+	run("Convert to Mask");
 	
 	}
+
+//	Tile to make this all more visible 
+	
+	run("Tile");
