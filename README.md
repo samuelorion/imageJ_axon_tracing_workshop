@@ -29,8 +29,18 @@ If you so wish, you can count neurons manually. But, this is ineffective when we
 
 - This document is the continuation of [this document](https://udemontreal.sharepoint.com/:w:/r/sites/Gr-LaboTrudeau2/_layouts/15/Doc.aspx?sourcedoc=%7B0BDE5351-CB80-4243-A3E5-6134666C45C5%7D&file=Document.docx&action=default&mobileredirect=true).
 - Make sure you have the [Fiji distribution of imageJ installed](https://imagej.net/Fiji).
+- Spot a typo, find something is unclear... please comments
 
-### What we are trying to do 
+
+---
+
+![](https://i.imgur.com/y8DjgnQ.png)
+
+
+---
+
+
+## What we are trying to do ...  
 
 Turn this ... 
 
@@ -86,6 +96,10 @@ If you know very little about scripts in ImageJ, I encourage you to consult thes
 
 The ImageJ script can be found [here on github](https://github.com/samuelorion/imageJ_axon_tracing_workshop/blob/main/TraceAxons_worksho.ijm)
 
+:::info
+You will alsoe find another script "trace_and_count_reorganized_for_size_overlay_modification". This is for a different anlysis, but is organized in a way that optimisez for image management, and counting prior to tracing.
+:::
+
 #### How does this work? Step by step... 
 
 Declare a path to the folder containging your images.
@@ -124,7 +138,7 @@ for (i = 0; i < list.length; i++){
 		file = input + path;
 ```
 :::info
-you can replace 'list.length' with a an integer, such that you choose how many images you open (ie put 1 there, and it will only open the first image in 'list')
+you can replace 'list.length' with an integer, such that you choose how many images you open (ie put 1 there, and it will only open the first image in 'list')
 :::
 To set up our analysis (and for opening images that are not .tif (ie. .nd files)), we will use biofromats to open the image.
 
@@ -176,4 +190,84 @@ gaussian = getTitle();
 gauss_sigma = 20; // can be modified 
 run("Gaussian Blur...", "sigma=gauss_sigma"); 
 ```
+This gives is this: 
 
+![](https://i.imgur.com/wMlA7GD.jpg)
+
+And, then, to clean and normalize the image, we can subtract the gaussian from the original. 
+
+```javascript=
+imageCalculator("Subtract create", raw, gaussian);
+setOption("ScaleConversions", true);
+run("Enhance Contrast", "saturated=0.35");	
+raw_sub_gaussian = getTitle();
+```
+![](https://i.imgur.com/Gj07JjK.png)
+
+A (relatively clean) version of the original, with background removed, axons well resolved, and a method that allows for standardization of signal across images. 
+
+If we zoom in, and change the LUT (virdis). We can see the effect. 
+
+![](https://i.imgur.com/ugUHVFx.jpg)
+
+We will now threshold this image, binzarize, and create a skeleton.  
+
+```javascript=
+selectWindow(raw_sub_gaussian);
+setAutoThreshold("Huang dark no-reset");
+//run("Threshold...");
+setThreshold(250, 65535);
+setOption("BlackBackground", true);
+run("Convert to Mask");
+```
+
+:::warning
+This is a section which can be worked on.
+
+We could use an automatic thresholding method. 
+
+But for now, we will set this manually. 
+
+By, looking at several crops of images, we can set this in an efficient way. 
+:::
+
+:::danger
+**NOTE**  
+Within this script, we keep images open (that use memory) for showing what is happening. However, it important to consider that, when running many computations, it is adviseable to conserve memory. 
+:::
+ 
+
+---
+#### Setting the threshold
+
+What I suggest, is that, by using the crop function of bioimports, we open many of the images, and vizualy inspect the segmentation, prior to running the full analysis. 
+
+By using 
+
+```javascript=
+run("Tile");
+```
+We can vizualize the whole analysis 
+
+![](https://i.imgur.com/K6EgUkq.png)
+
+:::success
+It would be possible to close the 'gaussian' image to eliminate this image from appearing.  
+
+You would do this by including a close command after you have used it ... 
+:::
+
+```javascript=
+selectWindow(gaussian); close(); 
+```
+But for now, this is not necessary. Just an FYI. 
+
+```javascript=
+
+```
+
+
+
+```javascript=
+
+```
